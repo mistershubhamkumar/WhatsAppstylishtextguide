@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iOS Stylish Font Generator with Images</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #F2F2F7;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .app-container {
+      width: 95%;
+      max-width: 420px;
+      background-color: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      background-color: #007AFF;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .guide-box {
+      background-color: #F9FAFB;
+      padding: 15px;
+      font-size: 14px;
+      color: #555555;
+      border-bottom: 1px solid #E0E0E0;
+      border-radius: 0 0 20px 20px;
+    }
+
+    .guide-box h4 {
+      margin: 0 0 10px;
+      color: #333333;
+    }
+
+    .guide-box p {
+      margin: 5px 0;
+      line-height: 1.5;
+    }
+
+    .output-area {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background-color: #F2F2F7;
+    }
+
+    .message {
+      margin: 10px 0;
+      padding: 10px 15px;
+      background-color: #E5E5EA;
+      color: #333;
+      border-radius: 15px;
+      max-width: 70%;
+    }
+
+    .message.sent {
+      margin-left: auto;
+      background-color: #007AFF;
+      color: white;
+    }
+
+    .message img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 5px;
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #FFFFFF;
+      border-top: 1px solid #E0E0E0;
+    }
+
+    .text-input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #E0E0E0;
+      border-radius: 20px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .file-label {
+      background-color: #F2F2F7;
+      color: #007AFF;
+      border: 1px solid #E0E0E0;
+      padding: 10px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+
+    .send-btn {
+      background-color: #007AFF;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .send-btn:hover {
+      background-color: #005BB5;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">iOS Stylish Font Generator with Images</div>
+    <div class="guide-box">
+      <h4>Formatting Guide:</h4>
+      <p><b>*text*</b> → <b>Bold</b></p>
+      <p><i>_text_</i> → <i>Italic</i></p>
+      <p><s>~text~</s> → <s>Strikethrough</s></p>
+      <p><code>`text`</code> → <code>Inline Code</code></p>
+      <p>&gt; text → Blockquote</p>
+      <p>- text → Bullet</p>
+      <p>1. text → Numbered List</p>
+    </div>
+    <div class="output-area" id="outputArea"></div>
+    <div class="input-container">
+      <label for="fileInput" class="file-label">📷</label>
+      <input type="file" id="fileInput" class="file-input" accept="image/*" onchange="previewImage()">
+      <input type="text" id="textInput" class="text-input" placeholder="Type your message...">
+      <button class="send-btn" onclick="generateText()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    function generateText() {
+      const input = document.getElementById("textInput").value.trim();
+      const outputArea = document.getElementById("outputArea");
+
+      if (input === "") return;
+
+      let formattedText = input
+        .replace(/\*([^*]+)\*/g, "<b>$1</b>") // Bold
+        .replace(/_([^_]+)_/g, "<i>$1</i>") // Italic
+        .replace(/~([^~]+)~/g, "<s>$1</s>") // Strikethrough
+        .replace(/`([^`]+)`/g, "<code style='color: #007AFF; background: #F2F2F7; padding: 2px 4px; border-radius: 4px;'>$1</code>") // Inline Code
+        .replace(/> (.+)/g, "<blockquote style='color: #555; margin: 5px 0; padding: 5px 10px; border-left: 3px solid #007AFF;'>$1</blockquote>") // Blockquote
+        .replace(/^- (.+)/gm, "• $1") // Bullet list
+        .replace(/^\d+\. (.+)/gm, "$1"); // Numbered list
+
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message", "sent");
+      messageDiv.innerHTML = formattedText;
+
+      outputArea.appendChild(messageDiv);
+      document.getElementById("textInput").value = "";
+      outputArea.scrollTop = outputArea.scrollHeight; // Auto-scroll to bottom
+    }
+
+    function previewImage() {
+      const fileInput = document.getElementById("fileInput");
+      const outputArea = document.getElementById("outputArea");
+      const file = fileInput.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message", "sent");
+
+          const img = document.createElement("img");
+          img.src = e.target.result;
+
+          messageDiv.appendChild(img);
+          outputArea.appendChild(messageDiv);
+          outputArea.scrollTop = outputArea.scrollHeight; // Auto-scroll to bottom
+        };
+        reader.readAsDataURL(file);
+      }
+
+      fileInput.value = ""; // Reset the file input
+    }
+  </script>
+</body>
+</html>
